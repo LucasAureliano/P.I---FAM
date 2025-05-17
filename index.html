@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet" />
+    <title>Calculadora de Área e Consumo de Tinta</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Área e Consumo de Tinta</h1>
+        <div id="case">
+            <label for="forma">Escolha a forma geométrica:</label>
+            <select id="forma">
+                <option value="retangulo">Retângulo</option>
+                <option value="circulo">Círculo</option>
+                <option value="quadrado">Quadrado</option>
+                <option value="triangulo">Triângulo</option>
+            </select>
+
+            <div id="inputs-forma"></div>
+
+            <label for="tinta">Escolha o tipo de tinta:</label>
+            <!--  Valor = rendimento aproximado (m²/L)     -->
+            <select id="tinta">
+                <option value="15">Tinta Látex PVA (≈15&nbsp;m²/L)</option>
+                <option value="12">Tinta Látex Acrílica (≈12&nbsp;m²/L)</option>
+                <option value="14">Tinta Látex Vinil‑Acrílica (≈14&nbsp;m²/L)</option>
+                <option value="15">Tinta Acrílica Fosca (≈15&nbsp;m²/L)</option>
+                <option value="14">Tinta Acrílica Acetinada (≈14&nbsp;m²/L)</option>
+                <option value="13">Tinta Acrílica Semibrilho (≈13&nbsp;m²/L)</option>
+                <option value="12">Tinta Acrílica Brilhante (≈12&nbsp;m²/L)</option>
+                <option value="14">Tinta a Óleo Fosca (≈14&nbsp;m²/L)</option>
+                <option value="13">Tinta a Óleo Acetinada (≈13&nbsp;m²/L)</option>
+                <option value="12">Tinta a Óleo Semibrilho (≈12&nbsp;m²/L)</option>
+                <option value="11">Tinta a Óleo Brilhante (≈11&nbsp;m²/L)</option>
+                <option value="0">Não usar tinta</option>
+            </select>
+        </div>
+
+        <div class="botao-wrapper">
+            <button onclick="calcular()">Calcular</button>
+        </div>
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        function atualizarInputs() {
+            const forma = document.getElementById("forma").value;
+            const container = document.getElementById("inputs-forma");
+            container.innerHTML = "";
+
+            if (forma === "retangulo") {
+                container.innerHTML = `
+                    <input type="number" id="altura" placeholder="Altura (m)" min="0.1" step="0.01" />
+                    <input type="number" id="largura" placeholder="Largura (m)" min="0.1" step="0.01" />`;
+            } else if (forma === "circulo") {
+                container.innerHTML = `
+                    <input type="number" id="raio" placeholder="Raio (m)" min="0.1" step="0.01" />`;
+            } else if (forma === "quadrado") {
+                container.innerHTML = `
+                    <input type="number" id="lado" placeholder="Lado (m)" min="0.1" step="0.01" />`;
+            } else if (forma === "triangulo") {
+                container.innerHTML = `
+                    <input type="number" id="base" placeholder="Base (m)" min="0.1" step="0.01" />
+                    <input type="number" id="altura" placeholder="Altura (m)" min="0.1" step="0.01" />`;
+            }
+        }
+
+        function calcular() {
+            const forma = document.getElementById("forma").value;
+            const rendimento = parseFloat(document.getElementById("tinta").value); // m² por litro
+            let area = 0;
+
+            try {
+                if (forma === "retangulo") {
+                    const altura = parseFloat(document.getElementById("altura").value);
+                    const largura = parseFloat(document.getElementById("largura").value);
+                    area = altura * largura;
+                } else if (forma === "circulo") {
+                    const raio = parseFloat(document.getElementById("raio").value);
+                    area = Math.PI * raio * raio;
+                } else if (forma === "quadrado") {
+                    const lado = parseFloat(document.getElementById("lado").value);
+                    area = lado * lado;
+                } else if (forma === "triangulo") {
+                    const base = parseFloat(document.getElementById("base").value);
+                    const altura = parseFloat(document.getElementById("altura").value);
+                    area = (base * altura) / 2;
+                }
+
+                let resultadoHTML = `<p>Área: ${area.toFixed(2)} m²</p>`;
+
+                if (rendimento > 0) {
+                    const consumo = area / rendimento; // litros necessários
+                    const baldes = Math.ceil(consumo / 5); // baldes de 5 L
+
+                    resultadoHTML += `
+                        <p>Rendimento da tinta: ${rendimento} m²/L</p>
+                        <p>Consumo estimado: ${consumo.toFixed(2)} litros</p>
+                        <p>Baldes de 5L necessários: ${baldes}</p>`;
+                } else {
+                    resultadoHTML += "<p>Nenhuma tinta selecionada.</p>";
+                }
+
+                document.getElementById("resultado").innerHTML = resultadoHTML;
+            } catch (e) {
+                document.getElementById("resultado").innerHTML = "Erro no cálculo. Verifique os valores.";
+            }
+
+            document.getElementById("resultado").style.display = "block";
+        }
+
+        document.getElementById("forma").addEventListener("change", atualizarInputs);
+        atualizarInputs(); // carrega os inputs ao abrir a página
+    </script>
+</body>
+</html>
